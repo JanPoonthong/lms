@@ -1,5 +1,5 @@
 import { app } from "./app";
-import connectDB from "./utlis/db";
+import connectDB from "./utils/db";
 require("dotenv").config();
 
 // create server
