@@ -6,12 +6,16 @@ export const app = express();
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import { ErrorMiddleware } from "./middleware/error";
+import userRouter from "./routes/user.routes";
 
 // body parser
 app.use(express.json({ limit: "50mb" }));
 
 // cookie parser
 app.use(cookieParser());
+
+// route
+app.use("/api/v1", userRouter);
 
 // cors -> cross origin resource sharing
 app.use(
