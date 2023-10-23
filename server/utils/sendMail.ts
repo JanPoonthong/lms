@@ -7,6 +7,7 @@ interface EmailOptions {
   email: string;
   subject: string;
   template: string;
+  // :any { name: 'Bobby Hadz', age: 30, pizza: true };
   data: { [key: string]: any };
 }
 
