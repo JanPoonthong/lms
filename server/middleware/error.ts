@@ -35,7 +35,8 @@ export const ErrorMiddleware = (
     err = new ErrorHandler(message, 400);
   }
 
-  res.statusCode(err.statusCode).json({
+  console.log(err.stack);
+  res.status(err.statusCode).json({
     success: false,
     message: err.message,
   });
