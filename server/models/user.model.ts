@@ -1,9 +1,9 @@
-import mongoose, { Document, Model, Schema } from "mongoose";
+import { model, Schema } from "mongoose";
 import bcrypt from "bcryptjs";
 
 const emailRegexPattern: RegExp = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
 
-export interface IUser extends Document {
+export interface IUser {
   name: string;
   email: string;
   password: string;
@@ -17,7 +17,7 @@ export interface IUser extends Document {
   comparePassword: (password: string) => Promise<boolean>;
 }
 
-const userSchema: Schema<IUser> = new mongoose.Schema(
+const userSchema: Schema<IUser> = new Schema<IUser>(
   {
     name: {
       type: String,
@@ -62,7 +62,7 @@ const userSchema: Schema<IUser> = new mongoose.Schema(
 );
 
 // Hash password
-userSchema.pre<IUser>("save", async function (next) {
+userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) {
     next();
   }
@@ -77,6 +77,6 @@ userSchema.methods.comparePassword = async function (
   return await bcrypt.compare(enteredPassword, this.password);
 };
 
-const userModel: Model<IUser> = mongoose.model("User", userSchema);
+const userModel = model<IUser>("User", userSchema);
 
 export default userModel;
