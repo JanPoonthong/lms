@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>lms</title>
+
+    <style>
+      #code {
+        font-weight: bold;
+        font-size: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <p>
+    You registered an account on <%= user.name %>, before being able to use
+    your account you need to activate your account, please use following activation code: 
+
+    <p id="code"><%= activationCode %></p>
+
+    Kind Regards, lms
+    <p>
+  </body>
+</html>
