@@ -3,9 +3,13 @@ import { Request, Response, NextFunction } from "express";
 import userModel, { IUser } from "../models/user.model";
 import ErrorHandler from "../utils/ErrorHandler";
 import { CatchAsyncError } from "../middleware/catchAsyncError";
-import jwt from "jsonwebtoken";
+import jwt, { JwtPayload } from "jsonwebtoken";
 import { sendMail } from "../utils/sendMail";
-import { sendToken } from "../utils/jwt";
+import {
+  sendToken,
+  accessTokenOptions,
+  refreshTokenOptions,
+} from "../utils/jwt";
 import { redis } from "../utils/redis";
 
 // Register user
@@ -179,6 +183,56 @@ export const logoutUser = CatchAsyncError(
       });
     } catch (error: any) {
       return next(new ErrorHandler(error, 400));
+    }
+  },
+);
+
+// Update access and refresh token
+
+export const updateAccessToken = CatchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const refresh_token: string = req.cookies.refresh_token as string;
+
+      const decode = jwt.verify(
+        refresh_token,
+        process.env.REFRESH_TOKEN as string,
+      ) as JwtPayload;
+
+      const errMessage = "Could not refresh token";
+      if (!decode) {
+        return next(new ErrorHandler(errMessage, 400));
+      }
+
+      const session = await redis.get(decode.id as string);
+
+      if (!session) {
+        return next(new ErrorHandler(errMessage, 400));
+      }
+
+      const user = JSON.parse(session);
+
+      const accessToken = jwt.sign(
+        { id: user._id },
+        process.env.ACCESS_TOKEN as string,
+        { expiresIn: "5m" },
+      );
+      const refreshToken = jwt.sign(
+        { id: user._id },
+        process.env.REFRESH_TOKEN as string,
+        { expiresIn: "3d" },
+      );
+
+      res.cookie("access_token", accessToken, accessTokenOptions);
+      res.cookie("refresh_token", refreshToken, refreshTokenOptions);
+
+      res.status(200).json({
+        success: true,
+        status: "success",
+        accessToken,
+      });
+    } catch (error: any) {
+      return next(new ErrorHandler(error.message, 400));
     }
   },
 );
