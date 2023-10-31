@@ -1,12 +1,8 @@
 import { Request, Response, NextFunction } from "express";
 import { CatchAsyncError } from "../middleware/catchAsyncError";
 import ErrorHandler from "../utils/ErrorHandler";
-import jwt from "jsonwebtoken";
+import jwt, { JwtPayload } from "jsonwebtoken";
 import { redis } from "../utils/redis";
-
-interface JwtPayload {
-  id: string;
-}
 
 // Autheticated user
 export const isAuthenticated = CatchAsyncError(
@@ -19,7 +15,7 @@ export const isAuthenticated = CatchAsyncError(
 
     const decoded = jwt.verify(
       access_token,
-      process.env.ACCESS_TOKEN as string
+      process.env.ACCESS_TOKEN as string,
     ) as JwtPayload;
 
     if (!decoded) {
