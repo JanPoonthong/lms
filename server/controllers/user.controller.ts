@@ -11,6 +11,7 @@ import {
   refreshTokenOptions,
 } from "../utils/jwt";
 import { redis } from "../utils/redis";
+import { getUserById } from "../services/user.services";
 
 // Register user
 interface IRegistrationBody {
@@ -194,6 +195,10 @@ export const updateAccessToken = CatchAsyncError(
     try {
       const refresh_token: string = req.cookies.refresh_token as string;
 
+      if (!refresh_token) {
+        return next(new ErrorHandler("Please enter your refresh token", 400));
+      }
+
       const decode = jwt.verify(
         refresh_token,
         process.env.REFRESH_TOKEN as string,
@@ -228,11 +233,48 @@ export const updateAccessToken = CatchAsyncError(
 
       res.status(200).json({
         success: true,
-        status: "success",
         accessToken,
+        status: "success",
       });
     } catch (error: any) {
-      return next(new ErrorHandler(error.message, 400));
+      return next(new ErrorHandler(error, 400).stack);
+    }
+  },
+);
+
+// Get user info
+export const getUserInfo = CatchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const userId: string = req.user?._id as string;
+      getUserById(userId, res);
+    } catch (error: any) {
+      return next(new ErrorHandler(error, 400));
+    }
+  },
+);
+
+interface ISocialAuthBody {
+  name: string;
+  email: string;
+  avatar: string;
+}
+
+// Social auth
+export const soicalAuth = CatchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { name, email, avatar } = req.body as ISocialAuthBody;
+      const user = await userModel.findOne({ email });
+
+      if (!user) {
+        const newUser = await userModel.create({ name, email, avatar });
+        sendToken(newUser, 200, res);
+      } else {
+        sendToken(user, 200, res);
+      }
+    } catch (error: any) {
+      return next(new ErrorHandler(error, 200));
     }
   },
 );
