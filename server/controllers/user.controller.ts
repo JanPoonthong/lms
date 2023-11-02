@@ -370,7 +370,7 @@ interface IUpdateProfilePicture {
 }
 
 // Update profile picture
-export const updateProfilePicture = CatchAsyncError(
+export const updateProfilePicture =   CatchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { avatar } = req.body as IUpdateProfilePicture;
@@ -379,28 +379,25 @@ export const updateProfilePicture = CatchAsyncError(
 
       const user = await userModel.findById(userId);
 
-      const uploadProfilePicture = CatchAsyncError(async (req: Request, res: Response, next: NextFunction) => {
-        try {
-          const myCloud = await cloudinary.v2.uploader.upload(avatar, {
-            folder: "avatars",
-            width: 150,
-          });
+      const uploadProfilePicture = async () => {
+        const myCloud = await cloudinary.v2.uploader.upload(avatar, {
+          folder: "avatars",
+          width: 150,
+        });
 
-          user.avatar = {
-            public_id: myCloud.public_id,
-            url: myCloud.secure_url,
-          };
-        } catch (error: any) {
-          return next(new ErrorHandler(error, 400));
-        }
-      });
+
+        user.avatar = {
+          public_id: myCloud.public_id,
+          url: myCloud.secure_url,
+        };
+      };
 
       if (avatar && user) {
         if (user?.avatar?.public_id) {
           await cloudinary.v2.uploader.destroy(user?.avatar?.public_id);
-          await uploadProfilePicture(req, res, next);
+          await uploadProfilePicture();
         } else {
-          await uploadProfilePicture(req, res, next);
+          await uploadProfilePicture();
         }
       }
 

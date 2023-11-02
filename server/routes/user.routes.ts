@@ -10,7 +10,7 @@ import {
   soicalAuth,
   updateUserInfo,
   updatePassword,
-  updateProfilePicture,
+    updateProfilePicture,
 } from "../controllers/user.controller";
 
 import { isAuthenticated } from "../middleware/auth";
