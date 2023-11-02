@@ -1,11 +1,8 @@
 import ErrorHandler from "../utils/ErrorHandler";
 
-import { Response} from "express";
+import { Response } from "express";
 
-export const ErrorMiddleware = (
-  err: any,
-  res: Response,
-) => {
+export const ErrorMiddleware = (err: any, res: Response) => {
   err.statusCode = err.statusCode || 500;
   err.message = err.message || "Internal server error";
 

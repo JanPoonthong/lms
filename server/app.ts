@@ -39,4 +39,3 @@ app.use("*", (req: Request, res: Response, next: NextFunction) => {
   err.statusCode = 404;
   next(err);
 });
-
