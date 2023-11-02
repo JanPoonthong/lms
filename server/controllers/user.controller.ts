@@ -370,7 +370,7 @@ interface IUpdateProfilePicture {
 }
 
 // Update profile picture
-export const updateProfilePicture =   CatchAsyncError(
+export const updateProfilePicture = CatchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { avatar } = req.body as IUpdateProfilePicture;
@@ -384,7 +384,6 @@ export const updateProfilePicture =   CatchAsyncError(
           folder: "avatars",
           width: 150,
         });
-
 
         user.avatar = {
           public_id: myCloud.public_id,
