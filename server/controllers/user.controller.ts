@@ -64,7 +64,7 @@ export const registrationUser = CatchAsyncError(
           activationToken: activationToken.token,
         });
       } catch (error: any) {
-        return next(new ErrorHandler(error, 400));
+        return next(new ErrorHandler(error.message, 400));
       }
     } catch (error: any) {
       return next(new ErrorHandler(error.message, 400));
@@ -164,7 +164,7 @@ export const loginUser = CatchAsyncError(
 
       sendToken(user, 200, res);
     } catch (error: any) {
-      return next(new ErrorHandler(error, 400));
+      return next(new ErrorHandler(error.message, 400));
     }
   },
 );
@@ -184,7 +184,7 @@ export const logoutUser = CatchAsyncError(
         message: "Logged out successfully",
       });
     } catch (error: any) {
-      return next(new ErrorHandler(error, 400));
+      return next(new ErrorHandler(error.message, 400));
     }
   },
 );
@@ -238,7 +238,7 @@ export const updateAccessToken = CatchAsyncError(
         status: "success",
       });
     } catch (error: any) {
-      return next(new ErrorHandler(error, 400).stack);
+      return next(new ErrorHandler(error.message, 400).stack);
     }
   },
 );
@@ -250,7 +250,7 @@ export const getUserInfo = CatchAsyncError(
       const userId: string = req.user?._id as string;
       getUserById(userId, res);
     } catch (error: any) {
-      return next(new ErrorHandler(error, 400));
+      return next(new ErrorHandler(error.message, 400));
     }
   },
 );
@@ -275,7 +275,7 @@ export const soicalAuth = CatchAsyncError(
         sendToken(user, 200, res);
       }
     } catch (error: any) {
-      return next(new ErrorHandler(error, 200));
+      return next(new ErrorHandler(error.message, 200));
     }
   },
 );
@@ -315,7 +315,7 @@ export const updateUserInfo = CatchAsyncError(
         user,
       });
     } catch (error: any) {
-      return next(new ErrorHandler(error, 400));
+      return next(new ErrorHandler(error.message, 400));
     }
   },
 );
@@ -360,7 +360,7 @@ export const updatePassword = CatchAsyncError(
         user,
       });
     } catch (error: any) {
-      return next(new ErrorHandler(error, 400));
+      return next(new ErrorHandler(error.message, 400));
     }
   },
 );
@@ -379,7 +379,7 @@ export const updateProfilePicture = CatchAsyncError(
 
       const user = await userModel.findById(userId);
 
-      const uploadProfilePicture = async () => {
+      const uploadProfilePicture = async (): Promise<void> => {
         const myCloud = await cloudinary.v2.uploader.upload(avatar, {
           folder: "avatars",
           width: 150,
@@ -408,7 +408,7 @@ export const updateProfilePicture = CatchAsyncError(
         user,
       });
     } catch (error: any) {
-      return next(new ErrorHandler(error, 400));
+      return next(new ErrorHandler(error.message, 400));
     }
   },
 );

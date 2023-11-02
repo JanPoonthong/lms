@@ -17,6 +17,8 @@ app.use(cookieParser());
 // route
 app.use("/api/v1", userRouter);
 
+app.use(ErrorMiddleware);
+
 // cors -> cross origin resource sharing
 app.use(
   cors({
@@ -38,4 +40,3 @@ app.use("*", (req: Request, res: Response, next: NextFunction) => {
   next(err);
 });
 
-app.use(ErrorMiddleware);
