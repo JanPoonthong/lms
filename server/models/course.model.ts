@@ -72,7 +72,7 @@ const courseDataSchema: Schema<ICourseData> = new Schema<ICourseData>({
   title: String,
   description: String,
   videoUrl: String,
-  videoThumbnail: Object,
+  // videoThumbnail: Object,
   videoSection: String,
   videoLength: Number,
   videoPlayer: String,
@@ -100,11 +100,11 @@ const courseSchema: Schema<ICourse> = new Schema<ICourse>({
   thumbnail: {
     public_id: {
       type: String,
-      require: true,
+      // require: true,
     },
     url: {
       type: String,
-      require: true,
+      // require: true,
     },
   },
   tags: {
