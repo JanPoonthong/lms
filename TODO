@@ -1,0 +1,11 @@
+[_] Need a better error handler
+      case:
+            courseRouter.put(
+              "/edit-course/:id", -> remove /
+              isAuthenticated,
+              authorizeRoles("admin"),
+              editCourse,
+            );
+
+      issue:
+            "Internal server error" isn't useful message
