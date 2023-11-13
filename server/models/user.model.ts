@@ -1,5 +1,5 @@
 require("dotenv").config();
-import { model, Schema } from "mongoose";
+import { model, Schema, Model } from "mongoose";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
@@ -95,6 +95,6 @@ userSchema.methods.comparePassword = async function (
   return await bcrypt.compare(enteredPassword, this.password);
 };
 
-const userModel = model<IUser>("User", userSchema);
+const userModel: Model<IUser> = model<IUser>("User", userSchema);
 
 export default userModel;
