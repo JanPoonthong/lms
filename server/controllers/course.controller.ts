@@ -4,6 +4,8 @@ import ErrorHandler from "../utils/ErrorHandler";
 import cloudinary from "cloudinary";
 import { createCourse } from "../services/course.services";
 
+import courseModel from "../models/course.model";
+
 // upload course
 export const uploadCourse = CatchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -24,6 +26,47 @@ export const uploadCourse = CatchAsyncError(
       createCourse(data, res, next);
     } catch (error: any) {
       return next(new ErrorHandler(error, 500));
+    }
+  },
+);
+
+// edit course
+export const editCourse = CatchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const data = req.body;
+      const thumbnail = data.thumbnail;
+
+      if (thumbnail) {
+        await cloudinary.v2.uploader.destroy(thumbnail.public_id);
+
+        const myCloud = await cloudinary.v2.uploader.upload(thumbnail, {
+          folder: "courses",
+        });
+
+        data.thumbnail = {
+          public_id: myCloud.public_id,
+          url: myCloud.secure_url,
+        };
+      }
+
+      const courseId = req.params.id;
+      console.log(courseId);
+
+      const course = await courseModel.findByIdAndUpdate(
+        courseId,
+        { $set: data },
+        { new: true },
+      );
+
+      console.log(course);
+
+      res.status(201).json({
+        success: true,
+        course,
+      });
+    } catch (error: any) {
+      return next(new ErrorHandler(error, 500).stack);
     }
   },
 );
