@@ -1,6 +1,10 @@
 import express from "express";
 
-import { uploadCourse, editCourse } from "../controllers/course.controller";
+import {
+  uploadCourse,
+  editCourse,
+  getSingleCourse,
+} from "../controllers/course.controller";
 
 import { isAuthenticated, authorizeRoles } from "../middleware/auth";
 
@@ -19,5 +23,7 @@ courseRouter.put(
   authorizeRoles("admin"),
   editCourse,
 );
+
+courseRouter.get("/get-course/:id", getSingleCourse);
 
 export default courseRouter;
