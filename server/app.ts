@@ -5,7 +5,8 @@ export const app = express();
 
 import cors from "cors";
 import cookieParser from "cookie-parser";
-import userRouter from "./routes/user.routes";
+import userRouter from "./routes/user.route";
+import courseRouter from "./routes/course.route";
 import { ErrorMiddleware } from "./middleware/error";
 
 // body parser
@@ -16,6 +17,7 @@ app.use(cookieParser());
 
 // route
 app.use("/api/v1", userRouter);
+app.use("/api/v1", courseRouter);
 
 app.use(ErrorMiddleware);
 
