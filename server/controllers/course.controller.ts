@@ -3,7 +3,7 @@ import { CatchAsyncError } from "../middleware/catchAsyncError";
 import ErrorHandler from "../utils/ErrorHandler";
 import cloudinary from "cloudinary";
 import { createCourse } from "../services/course.services";
-import mongoose from "mongoose"
+import mongoose from "mongoose";
 
 import courseModel from "../models/course.model";
 import { redis } from "../utils/redis";
@@ -172,36 +172,48 @@ export const getCourseByUser = CatchAsyncError(
 
 // add question in course
 interface IAddQuestionData {
-  question: string,
-  courseId: string
-  contentId: string
+  question: string;
+  courseId: string;
+  contentId: string;
 }
 
-export const addQuestion = CatchAsyncError(async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const {question, courseId, contentId}: IAddQuestionData = req.body as IAddQuestionData
+export const addQuestion = CatchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { question, courseId, contentId }: IAddQuestionData =
+        req.body as IAddQuestionData;
 
-    // Check if ID is valid, much be some bits
-    if (!mongoose.Types.ObjectId.isValid(contentId)) {
-      return next(new ErrorHandler("Invalid content id", 400))
+      // Check if ID is valid, much be some bits
+      if (!mongoose.Types.ObjectId.isValid(contentId)) {
+        return next(new ErrorHandler("Invalid content id", 400));
+      }
+
+      const course = await courseModel.findById(courseId);
+      const courseContent = course?.courseData.find((item: any) =>
+        item._id.equals(contentId),
+      );
+
+      if (!courseContent) {
+        return next(new ErrorHandler("Invalid content id", 400));
+      }
+
+      // create a new question object
+      const newQuestion: any = {
+        user: req.user,
+        question,
+        questionReplis: [],
+      };
+
+      courseContent.questions.push(newQuestion);
+
+      await course?.save();
+
+      res.status(200).json({
+        success: true,
+        course,
+      });
+    } catch (error: any) {
+      return next(new ErrorHandler(error, 500));
     }
-
-    const course =  await courseModel.findById(courseId)
-    const courseContent = course?.courseData.find((item: any) => item._id.equals(contentId))
-
-    if (!courseContent) {
-      return next(new ErrorHandler("Invalid content id", 400))
-    }
-
-    // create a new question object
-    const newQuestion: any = {
-      user: req.user,
-      question,
-      questionReplis: [],
-    }
-
-    courseContent.questions.push(newQuestion)
-  } catch (error: any) {
-    return next(new ErrorHandler(error, 500))
-  }
-})
+  },
+);
