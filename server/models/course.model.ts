@@ -1,7 +1,8 @@
 import { model, Schema, Model } from "mongoose";
+import { IUser } from "./user.model";
 
 interface IComment {
-  user: object;
+  user: IUser;
   question: string;
   questionReplis?: IComment[];
 }
