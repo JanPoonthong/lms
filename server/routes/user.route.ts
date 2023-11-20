@@ -1,16 +1,16 @@
 import express from "express";
 
 import {
-  activateUser,
-  registrationUser,
-  loginUser,
-  logoutUser,
-  updateAccessToken,
-  getUserInfo,
-  soicalAuth,
-  updateUserInfo,
-  updatePassword,
-  updateProfilePicture,
+    activateUser,
+    registrationUser,
+    loginUser,
+    logoutUser,
+    updateAccessToken,
+    getUserInfo,
+    soicalAuth,
+    updateUserInfo,
+    updatePassword,
+    updateProfilePicture,
 } from "../controllers/user.controller";
 
 import { isAuthenticated } from "../middleware/auth";

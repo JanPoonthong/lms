@@ -23,21 +23,21 @@ app.use(ErrorMiddleware);
 
 // cors -> cross origin resource sharing
 app.use(
-  cors({
-    origin: process.env.ORGIN,
-  }),
+    cors({
+        origin: process.env.ORGIN,
+    }),
 );
 
 app.get("/test", (req: Request, res: Response, next: NextFunction) => {
-  res.status(200).json({
-    success: true,
-    message: "API is running",
-  });
+    res.status(200).json({
+        success: true,
+        message: "API is running",
+    });
 });
 
 // unknow route
 app.use("*", (req: Request, res: Response, next: NextFunction) => {
-  const err: any = new Error(`Route ${req.originalUrl} not found`);
-  err.statusCode = 404;
-  next(err);
+    const err: any = new Error(`Route ${req.originalUrl} not found`);
+    err.statusCode = 404;
+    next(err);
 });
