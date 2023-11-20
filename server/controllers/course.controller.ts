@@ -309,8 +309,6 @@ interface IAddReview {
     review: string;
 }
 
-// TODO(jan): user should be able to review on course they brought
-
 export const addReview = CatchAsyncError(
     async (req: Request, res: Response, next: NextFunction) => {
         try {
@@ -341,7 +339,7 @@ export const addReview = CatchAsyncError(
                 comment: review,
             };
 
-            course?.reviews.push(reviewData);
+            course?.reviews?.push(reviewData);
 
             let avg = 0;
             course?.reviews.forEach((rev: any) => {
@@ -360,6 +358,60 @@ export const addReview = CatchAsyncError(
             };
 
             // create a notification
+
+            res.status(200).json({
+                success: true,
+                course,
+            });
+        } catch (error: any) {
+            return next(new ErrorHandler(error, 500).stack);
+        }
+    },
+);
+
+// add reply in review
+interface IAddReviewData {
+    comment: string;
+    courseId: string;
+    reviewId: string;
+}
+export const addReplyToReview = CatchAsyncError(
+    async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const { comment, courseId, reviewId }: IAddReviewData =
+                req.body as IAddReviewData;
+
+            const course = await courseModel.findById(courseId);
+
+            if (!course) {
+                return next(
+                    new ErrorHandler(
+                        "You not able eligible to access this course",
+                        404,
+                    ),
+                );
+            }
+
+            const review = course?.reviews?.find(
+                (rev: any) => rev._id.toString() === reviewId.toString(),
+            );
+
+            if (!review) {
+                return next(new ErrorHandler("Review not found", 404));
+            }
+
+            const replyData: any = {
+                user: req.user,
+                comment,
+            };
+
+            if (!review.commentReplies) {
+                review.commentReplies = [];
+            }
+
+            review?.commentReplies.push(replyData);
+
+            await course?.save();
 
             res.status(200).json({
                 success: true,
